@@ -34,7 +34,7 @@ public class jdjgame extends ApplicationAdapter {
     World world;
     Body body;
     OrthographicCamera camera;
-
+    int nWidth, nHeight;
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -45,12 +45,14 @@ public class jdjgame extends ApplicationAdapter {
         buttonAtlas = new TextureAtlas("button.pack");
         img = new Texture("penguin.png");
         sprite = new Sprite(img);
+        nWidth = Gdx.graphics.getWidth();
+        nHeight = Gdx.graphics.getHeight();
         // Center the sprite in the top/middle of the screen
         sprite.setPosition(Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2,
                 Gdx.graphics.getHeight() / 2);
 
 
-        world = new World(new Vector2(0, -9.8f), true);
+        world = new World(new Vector2(0, 0f), true);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -77,9 +79,9 @@ public class jdjgame extends ApplicationAdapter {
         textButtonStyle.down = skin.getDrawable("Button_Released");
         textButtonStyle.checked = skin.getDrawable("Button_Pressed");
         button = new TextButton("", textButtonStyle);
+        button.setSize(nWidth / 6, nWidth / 6);
         stage.addActor(button);
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.
-                getHeight());
+        camera = new OrthographicCamera(nWidth, nHeight);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
