@@ -2,6 +2,7 @@ package com.jdj.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -25,6 +27,7 @@ public class jdjgame extends ApplicationAdapter {
     Stage stage;
     TextButton button;
     TextButton.TextButtonStyle textButtonStyle;
+    Texture texture;
     BitmapFont font;
     Skin skin;
     TextureAtlas buttonAtlas;
@@ -40,7 +43,11 @@ public class jdjgame extends ApplicationAdapter {
         batch = new SpriteBatch();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        font = new BitmapFont();
+        texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
+        texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
+        font = new BitmapFont(Gdx.files.internal("LiberationMono.fnt"), new TextureRegion(texture), false);
+
+        font.setScale(1f, 1f);//scale to other devices - need to test it
         skin = new Skin();
         buttonAtlas = new TextureAtlas("button.pack");
         img = new Texture("penguin.png");
@@ -65,12 +72,8 @@ public class jdjgame extends ApplicationAdapter {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(sprite.getWidth() / 2 / PIXELS_TO_METERS, sprite.getHeight()
                 / 2 / PIXELS_TO_METERS);
-        // We are a box, so this makes sense, no?
-        // Basically set the physics polygon to a box with the same dimensions
-        //as our sprite
 
 
-        // Shape is the only disposable of the lot, so get rid of it
         shape.dispose();
         skin.addRegions(buttonAtlas);
         textButtonStyle = new TextButton.TextButtonStyle();
@@ -78,7 +81,8 @@ public class jdjgame extends ApplicationAdapter {
         textButtonStyle.up = skin.getDrawable("Button_Pressed");
         textButtonStyle.down = skin.getDrawable("Button_Released");
         textButtonStyle.checked = skin.getDrawable("Button_Pressed");
-        button = new TextButton("", textButtonStyle);
+        textButtonStyle.fontColor = Color.BLACK;
+        button = new TextButton("LAUNCH", textButtonStyle);
         button.setSize(nWidth / 6, nWidth / 6);
         stage.addActor(button);
         camera = new OrthographicCamera(nWidth, nHeight);
@@ -86,7 +90,7 @@ public class jdjgame extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //if button is pressed do stuff
-                body.setLinearVelocity(200f, 200f);
+                body.setLinearVelocity(5f, 5f);
             }
         });
     }
@@ -112,7 +116,10 @@ public class jdjgame extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        batch.dispose();
         img.dispose();
         world.dispose();
+        texture.dispose();
+        font.dispose();
     }
 }
