@@ -81,7 +81,7 @@ public class jdjgame implements ApplicationListener, GestureListener {
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         // TODO Auto-generated method stub
-        camera.translate(-deltaX, 0);
+        camera.translate(-deltaX, deltaY);
         camera.update();
         return false;
     }
