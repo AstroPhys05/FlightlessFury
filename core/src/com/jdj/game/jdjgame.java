@@ -2,124 +2,93 @@ package com.jdj.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+// Source: http://programmersweb.blogspot.ca/2012/07/simple-libgdx-box2d-bouncing-ball.html
 public class jdjgame extends ApplicationAdapter {
-    final float PIXELS_TO_METERS = 100f;//convert pixels to meters since box2d uses meters
-    Stage stage;
-    TextButton button;
-    TextButton.TextButtonStyle textButtonStyle;
-    Texture texture;
-    BitmapFont font;
-    Skin skin;
-    TextureAtlas buttonAtlas;
-    SpriteBatch batch;
-    Sprite sprite;
-    Texture img;
-    World world;
-    Body body;
+    static final float BOX_STEP = 1 / 60f;
+    static final int velocity = 10; // set the velocity of the ball
+    static final int BOX_POSITION_ITERATIONS = 2;
+    static final float WORLD_TO_BOX = 0.01f;
+    static final float BOX_WORLD_TO = 100f;
+    World world = new World(new Vector2(0, -100), true);
+    Box2DDebugRenderer debugRenderer;
     OrthographicCamera camera;
-    int nWidth, nHeight;
+    SpriteBatch batch;
+    Texture img;
+    Sprite sprite;
+    Body body;
     @Override
     public void create() {
         batch = new SpriteBatch();
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-        texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
-        texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
-        font = new BitmapFont(Gdx.files.internal("LiberationMono.fnt"), new TextureRegion(texture), false);
-
-        font.setScale(1f, 1f);//scale to other devices - need to test it
-        skin = new Skin();
-        buttonAtlas = new TextureAtlas("button.pack");
+        //sprite since it's going to move
         img = new Texture("penguin.png");
         sprite = new Sprite(img);
-        nWidth = Gdx.graphics.getWidth();
-        nHeight = Gdx.graphics.getHeight();
-        // Center the sprite in the top/middle of the screen
-        sprite.setPosition(Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2,
-                Gdx.graphics.getHeight() / 2);
-
-
-        world = new World(new Vector2(0, 0f), true);
-
+        camera = new OrthographicCamera();
+        camera.viewportHeight = 320;
+        camera.viewportWidth = 480;
+        camera.position.set(camera.viewportWidth * .5f, camera.viewportHeight * .5f, 0f);
+        camera.update();
+        //Ground body
+        BodyDef groundBodyDef = new BodyDef();
+        groundBodyDef.position.set(new Vector2(0, 10));
+        Body groundBody = world.createBody(groundBodyDef);
+        PolygonShape groundBox = new PolygonShape(); // imaginary floor, where the ball is bouncing
+        groundBox.setAsBox((camera.viewportWidth) * 2, 10.0f);
+        groundBody.createFixture(groundBox, 0.0f);
+        //Dynamic Body
+        sprite.setPosition(camera.viewportWidth / 2, camera.viewportHeight / 2);
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set((sprite.getX() + sprite.getWidth() / 2) /
-                        PIXELS_TO_METERS,
-                (sprite.getY() + sprite.getHeight() / 2) / PIXELS_TO_METERS);
-
+        bodyDef.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2);
         body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth() / 2 / PIXELS_TO_METERS, sprite.getHeight()
-                / 2 / PIXELS_TO_METERS);
-
-
-        shape.dispose();
-        skin.addRegions(buttonAtlas);
-        textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
-        textButtonStyle.up = skin.getDrawable("Button_Pressed");
-        textButtonStyle.down = skin.getDrawable("Button_Released");
-        textButtonStyle.checked = skin.getDrawable("Button_Pressed");
-        textButtonStyle.fontColor = Color.BLACK;
-        button = new TextButton("LAUNCH", textButtonStyle);
-        button.setSize(nWidth / 6, nWidth / 6);
-        stage.addActor(button);
-        camera = new OrthographicCamera(nWidth, nHeight);
-        button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //if button is pressed do stuff
-                body.setLinearVelocity(5f, 5f);
-            }
-        });
+        CircleShape dynamicCircle = new CircleShape();
+        dynamicCircle.setRadius(5f); // radius of the circle/shape
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = dynamicCircle;
+        fixtureDef.density = 10.0f;
+        fixtureDef.friction = 0.0f;
+        fixtureDef.restitution = 1;
+        body.createFixture(fixtureDef);
+        debugRenderer = new Box2DDebugRenderer();
     }
-
+    @Override
+    public void dispose() {
+    }
 
     @Override
     public void render() {
-        camera.update();
-        world.step(1 / 60f, 6, 2);
-        sprite.setPosition((body.getPosition().x * PIXELS_TO_METERS) - sprite.
-                        getWidth() / 2,
-                (body.getPosition().y * PIXELS_TO_METERS) - sprite.getHeight() / 2)
-        ;
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        debugRenderer.render(world, camera.combined);
 
+        world.step(BOX_STEP, velocity, BOX_POSITION_ITERATIONS);
+        sprite.setPosition(body.getPosition().x, body.getPosition().y);
         batch.begin();
         batch.draw(sprite, sprite.getX(), sprite.getY());
         batch.end();
-
-        stage.draw();
+    }
+    @Override
+    public void resize(int width, int height) {
     }
 
     @Override
-    public void dispose() {
-        batch.dispose();
-        img.dispose();
-        world.dispose();
-        texture.dispose();
-        font.dispose();
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
     }
 }
