@@ -1,5 +1,5 @@
 package com.jdj.game;
-
+//TODO clean up code by making multiple files and grouping similar code
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -62,11 +62,10 @@ public class jdjgame extends ApplicationAdapter {
         sGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();
         nHeight = Gdx.graphics.getHeight();
-
         world = new World(new Vector2(0, -9.8f), true);
+        sGround.setSize(nWidth,nHeight/7);
         // Penguin Sprite and Physics body
         sPeng.setPosition(sPeng.getWidth(),sGround.getHeight());
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set((sPeng.getX() + sPeng.getWidth() / 2) / fPM,
@@ -138,7 +137,7 @@ public class jdjgame extends ApplicationAdapter {
 
         batch.begin();
         batch.draw(sPeng, sPeng.getX(), sPeng.getY());
-        batch.draw(sGround,sGround.getX(),sGround.getY());
+        batch.draw(sGround,sGround.getX(),sGround.getY(),sGround.getWidth(),sGround.getHeight());
         batch.end();
 
         stage.draw();
