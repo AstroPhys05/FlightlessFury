@@ -83,7 +83,7 @@ public class jdjgame extends ApplicationAdapter {
         fixtureDef.shape = shape;
         fixtureDef.density = 10.0f;
         fixtureDef.friction = 1.0f;
-        fixtureDef.restitution = 0f;
+        fixtureDef.restitution = 0.5f;
         body.createFixture(fixtureDef);
         //Ground body & sprite
         sGround.setPosition(Gdx.graphics.getWidth() / 2 - sGround.getWidth() / 2, 0);
