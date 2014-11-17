@@ -27,7 +27,7 @@ import com.badlogic.gdx.math.Matrix4;
 public class jdjgame extends ApplicationAdapter {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
-    TextButton button;
+    TextButton bLaunch, bReset;
     TextButton.TextButtonStyle textButtonStyle;
     Texture texture;
     BitmapFont font;
@@ -95,7 +95,7 @@ public class jdjgame extends ApplicationAdapter {
                 / 2 / fPM);
         groundBody.createFixture(groundBox, 0.0f);
 //
-        //Button
+        //Button 1 : Launch
         skin.addRegions(buttonAtlas);
         textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
@@ -103,20 +103,32 @@ public class jdjgame extends ApplicationAdapter {
         textButtonStyle.down = skin.getDrawable("Button_Released");
         textButtonStyle.checked = skin.getDrawable("Button_Pressed");
         textButtonStyle.fontColor = Color.BLACK;
-        button = new TextButton("LAUNCH", textButtonStyle);
-        button.setSize(nWidth / 7, nWidth / 7);
-        button.setPosition(0,nHeight- nWidth/7);//Set it to top left corner
-        stage.addActor(button);
+        bLaunch = new TextButton("LAUNCH", textButtonStyle);
+        bLaunch.setSize(nWidth / 7, nWidth / 7);
+        bLaunch.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
         camera = new OrthographicCamera(nWidth, nHeight);
-        button.addListener(new ChangeListener() {
+        bLaunch.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //if button is pressed do stuff
-                body.setLinearVelocity(5f, 5f);
+                //if bLaunch is pressed do stuff
+                body.setLinearVelocity(3f, 7f);
             }
         });
+        //Button 2 : Reset
+        bReset = new TextButton("RESET", textButtonStyle);
+        bReset.setSize(nWidth/7,nWidth/7);
+        bReset.setPosition(nWidth/7,nHeight-nWidth/7);
+        bReset.addListener(new ChangeListener(){
+            @Override
+            public void changed(ChangeEvent event, Actor actor){
+                body.setLinearVelocity(0,0);
+                body.setTransform((sPeng.getWidth()+ sPeng.getWidth()/2) / fPM,
+                        (sGround.getHeight() + sPeng.getHeight() / 2) / fPM,0);
+            }
 
-
+        });
+        stage.addActor(bLaunch);
+        stage.addActor(bReset);
         debugRenderer = new Box2DDebugRenderer();//For Debugging : Shows Boxes around the sprites
     }
 
