@@ -32,7 +32,7 @@ public class jdjgame extends ApplicationAdapter {
     Texture texture;
     BitmapFont font;
     Skin skin;
-    TextureAtlas buttonAtlas;
+    TextureAtlas buttonAtlas,buttonAtlas2;
     SpriteBatch batch;
     Sprite sPeng, sGround;
     Texture iPeng, iGround;
@@ -54,8 +54,7 @@ public class jdjgame extends ApplicationAdapter {
         font = new BitmapFont(Gdx.files.internal("LiberationMono.fnt"), new TextureRegion(texture), false);
         font.setScale(1f, 1f);//scale to other devices - need to test it
 
-        buttonAtlas = new TextureAtlas("button.pack");
-
+        buttonAtlas = new TextureAtlas("bLaunch.pack");
         iPeng = new Texture("penguin.png");
         iGround = new Texture("ground.jpg");
         sPeng = new Sprite(iPeng);
@@ -81,7 +80,7 @@ public class jdjgame extends ApplicationAdapter {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 10.0f;
-        fixtureDef.friction = 1.0f;
+        fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.5f;
         body.createFixture(fixtureDef);
         //Ground body & sprite
@@ -99,9 +98,10 @@ public class jdjgame extends ApplicationAdapter {
         skin.addRegions(buttonAtlas);
         textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
-        textButtonStyle.up = skin.getDrawable("Button_Pressed");
-        textButtonStyle.down = skin.getDrawable("Button_Released");
-        textButtonStyle.checked = skin.getDrawable("Button_Pressed");
+        textButtonStyle.font.setColor(Color.WHITE);
+        textButtonStyle.up = skin.getDrawable("Launch_Pressed");
+        textButtonStyle.down = skin.getDrawable("Launch_Unpressed");
+        textButtonStyle.checked = skin.getDrawable("Launch_Pressed");
         textButtonStyle.fontColor = Color.BLACK;
         bLaunch = new TextButton("LAUNCH", textButtonStyle);
         bLaunch.setSize(nWidth / 7, nWidth / 7);
@@ -111,7 +111,7 @@ public class jdjgame extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //if bLaunch is pressed do stuff
-                body.setLinearVelocity(3f, 7f);
+                body.setLinearVelocity(5f,5f);
             }
         });
         //Button 2 : Reset
