@@ -1,5 +1,6 @@
 package com.jdj.game;
 //TODO clean up code by making multiple files and grouping similar code
+//TODO add a background
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -32,7 +33,7 @@ public class jdjgame extends ApplicationAdapter {
     Texture texture;
     BitmapFont font;
     Skin skin;
-    TextureAtlas buttonAtlas,buttonAtlas2;
+    TextureAtlas buttonAtlas;
     SpriteBatch batch;
     Sprite sPeng, sGround;
     Texture iPeng, iGround;
@@ -98,11 +99,10 @@ public class jdjgame extends ApplicationAdapter {
         skin.addRegions(buttonAtlas);
         textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
-        textButtonStyle.font.setColor(Color.WHITE);
         textButtonStyle.up = skin.getDrawable("Launch_Pressed");
         textButtonStyle.down = skin.getDrawable("Launch_Unpressed");
         textButtonStyle.checked = skin.getDrawable("Launch_Pressed");
-        textButtonStyle.fontColor = Color.BLACK;
+        textButtonStyle.font.setColor(Color.WHITE);
         bLaunch = new TextButton("LAUNCH", textButtonStyle);
         bLaunch.setSize(nWidth / 7, nWidth / 7);
         bLaunch.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
@@ -135,20 +135,27 @@ public class jdjgame extends ApplicationAdapter {
 
     @Override
     public void render() {
-        camera.update();
         world.step(1 / 60f, 6, 2);
         sPeng.setPosition((body.getPosition().x * fPM) - sPeng.
                         getWidth() / 2,
                 (body.getPosition().y * fPM) - sPeng.getHeight() / 2)
         ;
+        sPeng.setRotation((float)Math.toDegrees(body.getAngle()));
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugMatrix = batch.getProjectionMatrix().cpy().scale(fPM,
                 fPM, 0);//For Debugging : Shows Boxes around the sprites
 
+        camera.position.set(sPeng.getX(), sPeng.getY(),0);
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
         batch.begin();
-        batch.draw(sPeng, sPeng.getX(), sPeng.getY());
+        batch.draw(sPeng, sPeng.getX(), sPeng.getY(),sPeng.getOriginX(),
+                sPeng.getOriginY(),
+                sPeng.getWidth(),sPeng.getHeight(),sPeng.getScaleX(),sPeng.
+                        getScaleY(),sPeng.getRotation());
         batch.draw(sGround,sGround.getX(),sGround.getY(),sGround.getWidth(),sGround.getHeight());
         batch.end();
 
