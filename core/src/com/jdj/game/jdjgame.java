@@ -55,7 +55,7 @@ public class jdjgame extends ApplicationAdapter {
         font = new BitmapFont(Gdx.files.internal("LiberationMono.fnt"), new TextureRegion(texture), false);
         font.setScale(1f, 1f);//scale to other devices - need to test it
 
-        buttonAtlas = new TextureAtlas("bLaunch.pack");
+        buttonAtlas = new TextureAtlas("buttons.pack");
         iPeng = new Texture("penguin.png");
         iGround = new Texture("ground.jpg");
         sPeng = new Sprite(iPeng);
@@ -122,6 +122,7 @@ public class jdjgame extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor){
                 body.setLinearVelocity(0,0);
+                body.setAngularVelocity(0);
                 body.setTransform((sPeng.getWidth()+ sPeng.getWidth()/2) / fPM,
                         (sGround.getHeight() + sPeng.getHeight() / 2) / fPM,0);
             }
