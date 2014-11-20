@@ -43,6 +43,7 @@ public class jdjgame extends ApplicationAdapter {
     int nWidth, nHeight;
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
+    //debugging
     @Override
     public void create() {
         batch = new SpriteBatch();
