@@ -1,6 +1,7 @@
 package com.jdj.game;
 //TODO clean up code by making multiple files and grouping similar code
 //TODO add a background
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -20,11 +21,14 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.math.Matrix4;
+
 public class jdjgame extends ApplicationAdapter {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
@@ -43,6 +47,7 @@ public class jdjgame extends ApplicationAdapter {
     int nWidth, nHeight;
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
+
     //debugging
     @Override
     public void create() {
@@ -64,9 +69,9 @@ public class jdjgame extends ApplicationAdapter {
         nWidth = Gdx.graphics.getWidth();
         nHeight = Gdx.graphics.getHeight();
         world = new World(new Vector2(0, -9.8f), true);
-        sGround.setSize(nWidth,nHeight/7);
+        sGround.setSize(nWidth, nHeight / 7);
         // Penguin Sprite and Physics body
-        sPeng.setPosition(sPeng.getWidth(),sGround.getHeight());
+        sPeng.setPosition(sPeng.getWidth(), sGround.getHeight());
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set((sPeng.getX() + sPeng.getWidth() / 2) / fPM,
@@ -89,7 +94,7 @@ public class jdjgame extends ApplicationAdapter {
         sGround.setPosition(Gdx.graphics.getWidth() / 2 - sGround.getWidth() / 2, 0);
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.position.set((sGround.getX() + sGround.getWidth() / 2) / fPM,
-                (sGround.getY() + sGround.getHeight() / 2) / fPM );
+                (sGround.getY() + sGround.getHeight() / 2) / fPM);
         Body groundBody = world.createBody(groundBodyDef);
         PolygonShape groundBox = new PolygonShape();
         groundBox.setAsBox(sGround.getWidth() / 2 / fPM, sGround.getHeight()
@@ -108,24 +113,29 @@ public class jdjgame extends ApplicationAdapter {
         bLaunch.setSize(nWidth / 7, nWidth / 7);
         bLaunch.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
         camera = new OrthographicCamera(nWidth, nHeight);
-        bLaunch.addListener(new ChangeListener() {
+        bLaunch.addListener(new InputListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //if bLaunch is pressed do stuff
-                body.setLinearVelocity(5f,5f);
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                body.setLinearVelocity(2f, 20f);
+                return true;
             }
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                //if bLaunch is pressed do stuff
+//                body.setLinearVelocity(5f,5f);
+//            }
         });
         //Button 2 : Reset
         bReset = new TextButton("RESET", textButtonStyle);
-        bReset.setSize(nWidth/7,nWidth/7);
-        bReset.setPosition(nWidth/7,nHeight-nWidth/7);
-        bReset.addListener(new ChangeListener(){
+        bReset.setSize(nWidth / 7, nWidth / 7);
+        bReset.setPosition(nWidth / 7, nHeight - nWidth / 7);
+        bReset.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor){
-                body.setLinearVelocity(0,0);
+            public void changed(ChangeEvent event, Actor actor) {
+                body.setLinearVelocity(0, 0);
                 body.setAngularVelocity(0);
-                body.setTransform((sPeng.getWidth()+ sPeng.getWidth()/2) / fPM,
-                        (sGround.getHeight() + sPeng.getHeight() / 2) / fPM,0);
+                body.setTransform((sPeng.getWidth() + sPeng.getWidth() / 2) / fPM,
+                        (sGround.getHeight() + sPeng.getHeight() / 2) / fPM, 0);
             }
 
         });
@@ -142,23 +152,23 @@ public class jdjgame extends ApplicationAdapter {
                         getWidth() / 2,
                 (body.getPosition().y * fPM) - sPeng.getHeight() / 2)
         ;
-        sPeng.setRotation((float)Math.toDegrees(body.getAngle()));
+        sPeng.setRotation((float) Math.toDegrees(body.getAngle()));
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugMatrix = batch.getProjectionMatrix().cpy().scale(fPM,
                 fPM, 0);//For Debugging : Shows Boxes around the sprites
 
-        camera.position.set(sPeng.getX(), sPeng.getY(),0);
+        camera.position.set(sPeng.getX(), sPeng.getY(), 0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        batch.draw(sPeng, sPeng.getX(), sPeng.getY(),sPeng.getOriginX(),
+        batch.draw(sPeng, sPeng.getX(), sPeng.getY(), sPeng.getOriginX(),
                 sPeng.getOriginY(),
-                sPeng.getWidth(),sPeng.getHeight(),sPeng.getScaleX(),sPeng.
-                        getScaleY(),sPeng.getRotation());
-        batch.draw(sGround,sGround.getX(),sGround.getY(),sGround.getWidth(),sGround.getHeight());
+                sPeng.getWidth(), sPeng.getHeight(), sPeng.getScaleX(), sPeng.
+                        getScaleY(), sPeng.getRotation());
+        batch.draw(sGround, sGround.getX(), sGround.getY(), sGround.getWidth(), sGround.getHeight());
         batch.end();
 
         stage.draw();
