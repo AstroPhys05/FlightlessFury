@@ -39,6 +39,7 @@ import com.badlogic.gdx.math.Matrix4;
 //Buttons
 //http://stackoverflow.com/questions/21488311/libgdx-how-to-create-a-button
 //https://github.com/libgdx/libgdx/wiki/Texture-packer
+//http://gamedev.stackexchange.com/questions/60123/registering-inputlistener-in-libgdx
 
 //OrthoCam
 //http://www.gamefromscratch.com/post/2013/11/06/LibGDX-Tutorial-7-Camera-basics.aspx
