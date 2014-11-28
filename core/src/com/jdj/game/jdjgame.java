@@ -28,7 +28,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.math.Matrix4;
+//SideScrolling
+//https://code.google.com/p/libgdx-users/wiki/ScrollingTexture
 
+//Box2d Physics
+//http://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
+//https://github.com/libgdx/libgdx/wiki/Box2d
+//https://www.youtube.com/watch?v=IDZMRDb1A_M#t=812
+//http://programmersweb.blogspot.ca/2012/07/simple-libgdx-box2d-bouncing-ball.html
+
+//Buttons
+//http://stackoverflow.com/questions/21488311/libgdx-how-to-create-a-button
+//https://github.com/libgdx/libgdx/wiki/Texture-packer
+
+//OrthoCam
+//http://www.gamefromscratch.com/post/2013/11/06/LibGDX-Tutorial-7-Camera-basics.aspx
+//https://github.com/libgdx/libgdx/wiki/Orthographic-camera
 public class jdjgame extends ApplicationAdapter {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
