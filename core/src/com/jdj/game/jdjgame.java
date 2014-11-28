@@ -134,6 +134,7 @@ public class jdjgame extends ApplicationAdapter {
         bLaunch.setSize(nWidth / 7, nWidth / 7);
         bLaunch.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
         camera = new OrthographicCamera(nWidth, nHeight);
+        camera.position.y = spGround.getY()+camera.viewportHeight/2;
         bLaunch.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -156,6 +157,7 @@ public class jdjgame extends ApplicationAdapter {
                 body.setAngularVelocity(0);
                 body.setTransform((spPeng.getWidth() + spPeng.getWidth() / 2) / fPM,
                         (spGround.getHeight() + spPeng.getHeight() / 2) / fPM, 0);
+                camera.position.y = spGround.getY()+camera.viewportHeight/2;
                 scrollTimer = 0f;
             }
 
@@ -170,7 +172,7 @@ public class jdjgame extends ApplicationAdapter {
     @Override
     public void render() {
         if(bLaunchPressed){
-            body.setLinearVelocity(5f,5f);
+            body.setLinearVelocity(20f,20f);
         }
         groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);
         world.step(1 / 60f, 6, 2);
@@ -188,8 +190,13 @@ public class jdjgame extends ApplicationAdapter {
 
         debugMatrix = batch.getProjectionMatrix().cpy().scale(fPM,
                 fPM, 0);//For Debugging : Shows Boxes around the sprites
+        camera.position.x = spPeng.getX()+ spPeng.getWidth()/2;
+        camera.position.y= spPeng.getY()+spPeng.getHeight()/2;
+        if(camera.position.y<=spGround.getY()+camera.viewportHeight/2){
+            camera.position.y = spGround.getY()+camera.viewportHeight/2;
+        }
+        //camera.position.set(spPeng.getX(), spGround.getY()+camera.viewportHeight/2, 0);
 
-        camera.position.set(spPeng.getX(), spGround.getY()+camera.viewportHeight/2, 0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
@@ -204,7 +211,7 @@ public class jdjgame extends ApplicationAdapter {
         spBg.setU2((scrollTimer+1));
 
         batch.begin();
-        batch.draw(spBg,camera.position.x-camera.viewportWidth/2,camera.position.y-camera.viewportHeight/2);
+        batch.draw(spBg,camera.position.x-camera.viewportWidth/2,groundBody.getPosition().y);
         batch.draw(spPeng, spPeng.getX(), spPeng.getY(), spPeng.getOriginX(),
                 spPeng.getOriginY(),
                 spPeng.getWidth(), spPeng.getHeight(), spPeng.getScaleX(), spPeng.
