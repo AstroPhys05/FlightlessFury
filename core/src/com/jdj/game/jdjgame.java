@@ -1,6 +1,5 @@
 package com.jdj.game;
 //TODO clean up code by making multiple files and grouping similar code
-//TODO add a background
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -172,7 +171,7 @@ public class jdjgame extends ApplicationAdapter {
     @Override
     public void render() {
         if(bLaunchPressed){
-            body.setLinearVelocity(20f,20f);
+            body.setLinearVelocity(20f,10f);
         }
         groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);
         world.step(1 / 60f, 6, 2);
