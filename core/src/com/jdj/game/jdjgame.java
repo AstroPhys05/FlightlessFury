@@ -156,6 +156,7 @@ public class jdjgame extends ApplicationAdapter {
                 body.setAngularVelocity(0);
                 body.setTransform((spPeng.getWidth() + spPeng.getWidth() / 2) / fPM,
                         (spGround.getHeight() + spPeng.getHeight() / 2) / fPM, 0);
+                scrollTimer = 0f;
             }
 
         });
@@ -194,7 +195,7 @@ public class jdjgame extends ApplicationAdapter {
 
 
 
-        scrollTimer += body.getLinearVelocity().x/(3*fPM);//May need to change the divisor to get a realistic sized velocity
+        scrollTimer += body.getLinearVelocity().x/(1000);//May need to change the divisor to get a realistic sized velocity
         if(scrollTimer>1.0f)
            scrollTimer = 0.0f;
 
