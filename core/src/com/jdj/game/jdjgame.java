@@ -17,27 +17,24 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 // Thanks to Matt Brock for helping
-//TESTING BRANCHES
+
 public class jdjgame extends ApplicationAdapter {
-    UpButton upButton;
     Penguin penguin;
+    UpDownButtons upDownButtons;
 
     public void create() {
-        upButton = new UpButton();
-        upButton.create();
+        upDownButtons = new UpDownButtons();
+        upDownButtons.create();
         penguin = new Penguin();
+        upDownButtons.setPenguin(penguin);
         penguin.create();
-        upButton.button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                penguin.peng.rotate((float)45.0);
-            }
-        });
     }
 
     @Override
@@ -47,8 +44,7 @@ public class jdjgame extends ApplicationAdapter {
 
     public void render() {
         penguin.render();
-        upButton.render();
-
+        upDownButtons.render();
     }
 
     @Override
