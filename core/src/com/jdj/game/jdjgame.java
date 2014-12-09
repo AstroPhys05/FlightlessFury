@@ -2,6 +2,7 @@ package com.jdj.game;
 //TODO clean up code by making multiple files and grouping similar code
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -44,7 +45,7 @@ import com.badlogic.gdx.math.Matrix4;
 //OrthoCam
 //http://www.gamefromscratch.com/post/2013/11/06/LibGDX-Tutorial-7-Camera-basics.aspx
 //https://github.com/libgdx/libgdx/wiki/Orthographic-camera
-public class jdjgame extends ApplicationAdapter {
+public class jdjgame extends Game {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
     TextButton bLaunch, bReset;
