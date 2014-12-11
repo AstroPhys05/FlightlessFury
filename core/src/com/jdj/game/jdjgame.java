@@ -65,6 +65,7 @@ public class jdjgame extends Game {
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
     float scrollTimer = 0.0f;
+    Penguin penguin;
     //debugging
     @Override
     public void create() {
@@ -78,40 +79,22 @@ public class jdjgame extends Game {
         font.setScale(1f, 1f);//scale to other devices - need to test it
 
         buttonAtlas = new TextureAtlas("buttons.pack");
-        iPeng = new Texture("penguin.png");
+        //iPeng = new Texture("penguin.png");
         iGround = new Texture("ground.jpg");
         iBg = new Texture("city.jpg");
-        spPeng = new Sprite(iPeng);
+        //spPeng = new Sprite(iPeng);
         spGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();
         nHeight = Gdx.graphics.getHeight();
         world = new World(new Vector2(0, -9.8f), true);
         spGround.setSize(nWidth*2, nHeight / 7/3);
 
+        penguin = new Penguin(world);
         iBg.setWrap(Texture.TextureWrap.Repeat,Texture.TextureWrap.Repeat);
 
         spBg = new Sprite(iBg);
         //spBg.setSize(nWidth*7,nHeight*7);
-        // Penguin Sprite and Physics body
-        spPeng.setPosition(spPeng.getWidth(), spGround.getHeight());
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set((spPeng.getX() + spPeng.getWidth() / 2) / fPM,
-                (spPeng.getY() + spPeng.getHeight() / 2) / fPM);
 
-        body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(spPeng.getWidth() / 2 / fPM, spPeng.getHeight()
-                / 2 / fPM);
-
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 10.0f;
-        fixtureDef.friction = 0.3f;
-        fixtureDef.restitution = 0.5f;
-        body.createFixture(fixtureDef);
         //Ground body & sprite
         spGround.setPosition(0, 0);
         BodyDef groundBodyDef = new BodyDef();
@@ -154,10 +137,7 @@ public class jdjgame extends Game {
         bReset.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                body.setLinearVelocity(0, 0);
-                body.setAngularVelocity(0);
-                body.setTransform((spPeng.getWidth() + spPeng.getWidth() / 2) / fPM,
-                        (spGround.getHeight() + spPeng.getHeight() / 2) / fPM, 0);
+                penguin.ResetPos();
                 camera.position.y = spGround.getY()+camera.viewportHeight/2;
                 scrollTimer = 0f;
             }
@@ -173,39 +153,35 @@ public class jdjgame extends Game {
     @Override
     public void render() {
         if(bLaunchPressed){
-            body.setLinearVelocity(20f,10f);
+            penguin.setVelocity(20f,10f);
         }
         groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);
+        penguin.UpdatePos();
         world.step(1 / 60f, 6, 2);
-        spPeng.setPosition((body.getPosition().x * fPM) - spPeng.
-                        getWidth() / 2,
-                (body.getPosition().y * fPM) - spPeng.getHeight() / 2)
-        ;
         spGround.setPosition((groundBody.getPosition().x * fPM) - spGround.
                         getWidth() / 2,
                 (groundBody.getPosition().y * fPM) - spGround.getHeight() / 2)
         ;
-        spPeng.setRotation((float) Math.toDegrees(body.getAngle()));
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugMatrix = batch.getProjectionMatrix().cpy().scale(fPM,
                 fPM, 0);//For Debugging : Shows Boxes around the sprites
-        camera.position.x = spPeng.getX()+ spPeng.getWidth()/2;
-        camera.position.y= spPeng.getY()+spPeng.getHeight()/2;
+        camera.position.x = penguin.sprite.getX()+ penguin.sprite.getWidth()/2;
+        camera.position.y= penguin.sprite.getY()+penguin.sprite.getHeight()/2;
         if(camera.position.y<=spGround.getY()+camera.viewportHeight/2){
             camera.position.y = spGround.getY()+camera.viewportHeight/2;
         }
-        //camera.position.set(spPeng.getX(), spGround.getY()+camera.viewportHeight/2, 0);
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
 
 
-        scrollTimer += body.getLinearVelocity().x/(1000);//May need to change the divisor to get a realistic sized velocity
-        if(scrollTimer>1.0f)
-           scrollTimer = 0.0f;
+        scrollTimer += penguin.body.getLinearVelocity().x/(1000);//May need to change the divisor to get a realistic sized velocity
+        if(scrollTimer>1.0f) {
+            scrollTimer = 0.0f;
+        }
 
         spBg.setU(scrollTimer);
 
@@ -213,11 +189,9 @@ public class jdjgame extends Game {
 
         batch.begin();
         batch.draw(spBg,camera.position.x-camera.viewportWidth/2,groundBody.getPosition().y);
-        batch.draw(spPeng, spPeng.getX(), spPeng.getY(), spPeng.getOriginX(),
-                spPeng.getOriginY(),
-                spPeng.getWidth(), spPeng.getHeight(), spPeng.getScaleX(), spPeng.
-                        getScaleY(), spPeng.getRotation());
-        //batch.draw(spGround, spGround.getX(), spGround.getY(), spGround.getWidth(), spGround.getHeight());
+
+
+        penguin.draw(batch);
         batch.end();
 
         stage.draw();
