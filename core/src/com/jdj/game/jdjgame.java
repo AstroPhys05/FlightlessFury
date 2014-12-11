@@ -23,18 +23,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-// Thanks to Matt Brock for helping
 
 public class jdjgame extends ApplicationAdapter {
     Penguin penguin;
-    UpDownButtons upDownButtons;
+    Accelerometer accelerometer;
 
     public void create() {
-        upDownButtons = new UpDownButtons();
-        upDownButtons.create();
         penguin = new Penguin();
-        upDownButtons.setPenguin(penguin);
         penguin.create();
+
+
     }
 
     @Override
@@ -44,7 +42,9 @@ public class jdjgame extends ApplicationAdapter {
 
     public void render() {
         penguin.render();
-        upDownButtons.render();
+        if(accelerometer.accelY()>=0.5 || accelerometer.accelY()<=-0.5) {
+            penguin.peng.setRotation(-accelerometer.accelY()*10);
+        }
     }
 
     @Override
