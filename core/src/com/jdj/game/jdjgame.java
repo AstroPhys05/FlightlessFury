@@ -1,7 +1,6 @@
 package com.jdj.game;
 //TODO clean up code by making multiple files and grouping similar code
-
-import com.badlogic.gdx.ApplicationAdapter;
+//TODO COMMENT MORE
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -66,6 +64,7 @@ public class jdjgame extends Game {
     Matrix4 debugMatrix;
     float scrollTimer = 0.0f;
     Penguin penguin;
+    Accelerometer accelerometer;
     //debugging
     @Override
     public void create() {
@@ -86,7 +85,7 @@ public class jdjgame extends Game {
         spGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();
         nHeight = Gdx.graphics.getHeight();
-        world = new World(new Vector2(0, -9.8f), true);
+        world = new World(new Vector2(0f, -9.8f), true);
         spGround.setSize(nWidth*2, nHeight / 7/3);
 
         penguin = new Penguin(world);
@@ -155,6 +154,8 @@ public class jdjgame extends Game {
         if(bLaunchPressed){
             penguin.setVelocity(20f,10f);
         }
+            penguin.body.setAngularVelocity(-accelerometer.accelY()/3);
+
         groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);
         penguin.UpdatePos();
         world.step(1 / 60f, 6, 2);

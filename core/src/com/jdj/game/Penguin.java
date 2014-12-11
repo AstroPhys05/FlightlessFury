@@ -54,7 +54,7 @@ public class Penguin {
                 (Gdx.graphics.getHeight() / 7/3 + sprite.getHeight() / 2) / 100f, 0);
     }
     public void setVelocity(float x, float y) {
-        body.setLinearVelocity(20f, 10f);
+        body.setLinearVelocity(10f, 10f);
     }
 
     public void draw(SpriteBatch batch) {
