@@ -16,9 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class jdjgame extends ApplicationAdapter {
     SpriteBatch batch;
-    Texture img;
-    Texture img2;
-    Texture img3;
+    int index;
     Texture[] tile = new Texture[3];
     Stage stage;
     TextButton button;
@@ -26,9 +24,7 @@ public class jdjgame extends ApplicationAdapter {
     BitmapFont font;
     Skin skin;
     TextureAtlas buttonAtlas;
-    int nColour = 1;
-    Sound sound;
-    Texture TempImg;
+
     @Override
     public void create () {
         batch = new SpriteBatch();
@@ -36,7 +32,7 @@ public class jdjgame extends ApplicationAdapter {
         tile[0] = new Texture(Gdx.files.internal("cave.jpg"));
         tile[1] = new Texture(Gdx.files.internal("Rainforest.jpg"));
         tile[2] = new Texture(Gdx.files.internal("city.jpg"));
-
+        index = 0;
         Gdx.input.setInputProcessor(stage);
         font = new BitmapFont();
         skin = new Skin();
@@ -54,18 +50,15 @@ public class jdjgame extends ApplicationAdapter {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                TempImg = tile[0];
-                for(int i = 0;i<tile.length-1;i++){
-                    tile[i]=tile[i+1];
-
+                if (index >3){
+                    index = 0;
+                }else{
+                    index++;
                 }
-                tile[tile.length -1] = TempImg;
+
             }
 
 
-                /*img3 = img;
-                img = img2;
-                img2 = img3;*/
 
 
         });
@@ -78,7 +71,7 @@ public class jdjgame extends ApplicationAdapter {
     public void render () {
         batch.begin();
 
-        batch.draw(tile[0], 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        batch.draw(tile[index], 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         batch.end();
         stage.draw();
     }
