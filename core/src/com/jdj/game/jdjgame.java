@@ -45,19 +45,19 @@ import com.badlogic.gdx.math.Matrix4;
 //https://github.com/libgdx/libgdx/wiki/Orthographic-camera
 public class jdjgame extends Game {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
-    Stage stage;
-    TextButton bLaunch, bReset;
-    Boolean bLaunchPressed = false;
-    TextButton.TextButtonStyle textButtonStyle;
+    Stage stage;//The libgdx Stage to add the buttons
+    TextButton bLaunch, bReset;// the libgdx buttons LAUNCH and RESET
+    Boolean bLaunchPressed = false;//set the default pressed to false
+    TextButton.TextButtonStyle textButtonStyle;//make a textbutton style : fonts, etc.
     Texture texture;
     BitmapFont font;
-    Skin skin;
-    TextureAtlas buttonAtlas;
-    SpriteBatch batch;
-    Sprite spPeng, spGround, spBg;
-    Texture iPeng, iGround, iBg;
-    World world;
-    Body body, groundBody;
+    Skin skin;//uses texture atlas to create skin
+    TextureAtlas buttonAtlas;//the texture atlas of the button
+    SpriteBatch batch;//everything gets drawn with this
+    Sprite spGround, spBg;//uses the raw textures to create a file
+    Texture iGround, iBg;//the raw input
+    World world;//Box2d Physics world
+    Body groundBody;//
     OrthographicCamera camera;
     int nWidth, nHeight;
     Box2DDebugRenderer debugRenderer;
@@ -77,48 +77,42 @@ public class jdjgame extends Game {
         font = new BitmapFont(Gdx.files.internal("LiberationMono.fnt"), new TextureRegion(texture), false);
         font.setScale(1f, 1f);//scale to other devices - need to test it
 
-        buttonAtlas = new TextureAtlas("buttons.pack");
-        //iPeng = new Texture("penguin.png");
+        buttonAtlas = new TextureAtlas("buttons.pack");//the button's texture atlas uses the image file
         iGround = new Texture("ground.jpg");
         iBg = new Texture("city.jpg");
-        //spPeng = new Sprite(iPeng);
         spGround = new Sprite(iGround);
-        nWidth = Gdx.graphics.getWidth();
-        nHeight = Gdx.graphics.getHeight();
-        world = new World(new Vector2(0f, -9.8f), true);
-        spGround.setSize(nWidth*2, nHeight / 7/3);
+        nWidth = Gdx.graphics.getWidth();//Dimensions of the device
 
-        penguin = new Penguin(world);
-        iBg.setWrap(Texture.TextureWrap.Repeat,Texture.TextureWrap.Repeat);
+        penguin = new Penguin(world);//Make a penguin and pass the world class to do the physics
+        iBg.setWrap(Texture.TextureWrap.Repeat,Texture.TextureWrap.Repeat);//Set the texture wrap to repeat to use sidescrolling
 
-        spBg = new Sprite(iBg);
-        //spBg.setSize(nWidth*7,nHeight*7);
+        spBg = new Sprite(iBg);//Background image
 
         //Ground body & sprite
-        spGround.setPosition(0, 0);
-        BodyDef groundBodyDef = new BodyDef();
+        spGround.setPosition(0, 0);//Position of sprite
+        BodyDef groundBodyDef = new BodyDef();//Box2d bodydef is used by the body
         groundBodyDef.position.set((spGround.getX() + spGround.getWidth() / 2) / fPM,
-                (spGround.getY() + spGround.getHeight() / 2) / fPM);
-        groundBody = world.createBody(groundBodyDef);
-        PolygonShape groundBox = new PolygonShape();
+                (spGround.getY() + spGround.getHeight() / 2) / fPM);//Set the initial position
+        groundBody = world.createBody(groundBodyDef);//Pass the body def to the body
+        PolygonShape groundBox = new PolygonShape();//make a box shaped hitbox
         groundBox.setAsBox(spGround.getWidth() / 2 / fPM, spGround.getHeight()
-                / 2 / fPM);
-        groundBody.createFixture(groundBox, 0.0f);
-//
+                / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
+        groundBody.createFixture(groundBox, 0.0f);//make it fixed
+
         //Button 1 : Launch
-        skin.addRegions(buttonAtlas);
-        textButtonStyle = new TextButton.TextButtonStyle();
+        skin.addRegions(buttonAtlas);//add the texture atlas to the button skin
+        textButtonStyle = new TextButton.TextButtonStyle();//set the style using the font
         textButtonStyle.font = font;
-        textButtonStyle.up = skin.getDrawable("Launch_Pressed");
+        textButtonStyle.up = skin.getDrawable("Launch_Pressed");//the .pack file has defines individual image files for each setting
         textButtonStyle.down = skin.getDrawable("Launch_Unpressed");
         textButtonStyle.checked = skin.getDrawable("Launch_Pressed");
-        textButtonStyle.font.setColor(Color.WHITE);
-        bLaunch = new TextButton("LAUNCH", textButtonStyle);
-        bLaunch.setSize(nWidth / 7, nWidth / 7);
+        textButtonStyle.font.setColor(Color.WHITE);//Button text color = white
+        bLaunch = new TextButton("LAUNCH", textButtonStyle);//Set the text and pass the style
+        bLaunch.setSize(nWidth / 7, nWidth / 7);//set the size to 1/7th the screen width to keep it scaling
         bLaunch.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
-        camera = new OrthographicCamera(nWidth, nHeight);
-        camera.position.y = spGround.getY()+camera.viewportHeight/2;
-        bLaunch.addListener(new InputListener() {
+        camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
+        camera.position.y = spGround.getY()+camera.viewportHeight/2;//set the position to above the ground
+        bLaunch.addListener(new InputListener() {//Launch button listener
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 bLaunchPressed = true;
@@ -136,13 +130,13 @@ public class jdjgame extends Game {
         bReset.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                penguin.ResetPos();
-                camera.position.y = spGround.getY()+camera.viewportHeight/2;
-                scrollTimer = 0f;
+                penguin.ResetPos();//Reset penguin position
+                camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
+                scrollTimer = 0f;//reset scrollTimer
             }
 
         });
-        stage.addActor(bLaunch);
+        stage.addActor(bLaunch);//add the buttons to the stage
         stage.addActor(bReset);
         debugRenderer = new Box2DDebugRenderer();//For Debugging : Shows Boxes around the sprites
 
@@ -152,33 +146,34 @@ public class jdjgame extends Game {
     @Override
     public void render() {
         if(bLaunchPressed){
-            penguin.setVelocity(20f,10f);
+            penguin.setVelocity(20f,10f);//set the velocity when launch is pressed
         }
-            penguin.body.setAngularVelocity(-accelerometer.accelY()/3);
+            penguin.body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value
 
-        groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);
-        penguin.UpdatePos();
-        world.step(1 / 60f, 6, 2);
+        groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);//keep the ground on the bottom of the camera
+        penguin.UpdatePos();//update the sprites position to the body
+        world.step(1 / 60f, 6, 2);//Step the simulation of the box2d world to 60fps
         spGround.setPosition((groundBody.getPosition().x * fPM) - spGround.
                         getWidth() / 2,
                 (groundBody.getPosition().y * fPM) - spGround.getHeight() / 2)
         ;
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(1, 1, 1, 1);//clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugMatrix = batch.getProjectionMatrix().cpy().scale(fPM,
                 fPM, 0);//For Debugging : Shows Boxes around the sprites
-        camera.position.x = penguin.sprite.getX()+ penguin.sprite.getWidth()/2;
+
+        camera.position.x = penguin.sprite.getX()+ penguin.sprite.getWidth()/2;//set the camera position to follow the penguin's position
         camera.position.y= penguin.sprite.getY()+penguin.sprite.getHeight()/2;
         if(camera.position.y<=spGround.getY()+camera.viewportHeight/2){
             camera.position.y = spGround.getY()+camera.viewportHeight/2;
         }
 
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
+        camera.update();//update once all changes are made
+        batch.setProjectionMatrix(camera.combined);//This sets the batch to what the camera sees
 
 
-
+        //Scroll the background using the body's velocity
         scrollTimer += penguin.body.getLinearVelocity().x/(1000);//May need to change the divisor to get a realistic sized velocity
         if(scrollTimer>1.0f) {
             scrollTimer = 0.0f;
@@ -188,22 +183,19 @@ public class jdjgame extends Game {
 
         spBg.setU2((scrollTimer+1));
 
+        //Draw everything
         batch.begin();
         batch.draw(spBg,camera.position.x-camera.viewportWidth/2,groundBody.getPosition().y);
-
-
         penguin.draw(batch);
         batch.end();
-
-        stage.draw();
+        stage.draw();//draws everything inside the stage
 
         debugRenderer.render(world, debugMatrix);//For Debugging : Shows Boxes around the sprites
     }
 
     @Override
-    public void dispose() {
+    public void dispose() {//dispose so that less memory is used when exited
         batch.dispose();
-        iPeng.dispose();
         world.dispose();
         texture.dispose();
         font.dispose();

@@ -10,7 +10,7 @@ import com.badlogic.gdx.Input;
 public class Accelerometer {
     public static float accelY(){
         return Gdx.input.getAccelerometerY();
-    }
+    }//Value of the accelerometer on the phone in the y-direction
 }
 
 //We used to have the Up and Down buttons rotating the penguin
