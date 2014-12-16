@@ -34,10 +34,10 @@ public class GameScreen extends Game {
     Texture texture;
     BitmapFont font;
     SpriteBatch batch;//everything gets drawn with this
-    Sprite spGround, spBg;//uses the raw textures to create a file
-    Texture iGround, iBg;//the raw input
+    Sprite spBg;//uses the raw textures to create a file
+    Texture iBg;//the raw input
     World world;//Box2d Physics world
-    Body groundBody;//
+//    Body groundBody;//
     OrthographicCamera camera;
     int nWidth, nHeight;
     Box2DDebugRenderer debugRenderer;
@@ -45,37 +45,38 @@ public class GameScreen extends Game {
     float scrollTimer = 0.0f;
     Penguin penguin;
     Accelerometer accelerometer;
-
+    Ground ground;
     //debugging
     @Override
     public void create() {
         batch = new SpriteBatch();
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        iGround = new Texture("ground.jpg");
         iBg = new Texture("city.jpg");
-        spGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();//Dimensions of the device
+        camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
 
         penguin = new Penguin(world);//Make a penguin and pass the world class to do the physics
+        ground = new Ground(world);
+
         iBg.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);//Set the texture wrap to repeat to use sidescrolling
 
         spBg = new Sprite(iBg);//Background image
 
-        //Ground body & sprite
-        spGround.setPosition(0, 0);//Position of sprite
-        BodyDef groundBodyDef = new BodyDef();//Box2d bodydef is used by the body
-        groundBodyDef.position.set((spGround.getX() + spGround.getWidth() / 2) / fPM,
-                (spGround.getY() + spGround.getHeight() / 2) / fPM);//Set the initial position
-        groundBody = world.createBody(groundBodyDef);//Pass the body def to the body
-        PolygonShape groundBox = new PolygonShape();//make a box shaped hitbox
-        groundBox.setAsBox(spGround.getWidth() / 2 / fPM, spGround.getHeight()
-                / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
-        groundBody.createFixture(groundBox, 0.0f);//make it fixed
+//        //Ground body & sprite
+//        spGround.setPosition(0, 0);//Position of sprite
+//        BodyDef groundBodyDef = new BodyDef();//Box2d bodydef is used by the body
+//        groundBodyDef.position.set((spGround.getX() + spGround.getWidth() / 2) / fPM,
+//                (spGround.getY() + spGround.getHeight() / 2) / fPM);//Set the initial position
+//        groundBody = world.createBody(groundBodyDef);//Pass the body def to the body
+//        PolygonShape groundBox = new PolygonShape();//make a box shaped hitbox
+//        groundBox.setAsBox(spGround.getWidth() / 2 / fPM, spGround.getHeight()
+//                / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
+//        groundBody.createFixture(groundBox, 0.0f);//make it fixed
 
 
-        camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
-        camera.position.y = spGround.getY() + camera.viewportHeight / 2;
+
+        camera.position.y = ground.groundBody.getPosition().y + camera.viewportHeight / 2;
         bReset = new Button("RESET");
 
         stage.addActor(bLaunch.textButton);//add the buttons to the stage
@@ -92,18 +93,15 @@ public class GameScreen extends Game {
         }
         if (bReset.buttonPressed) {
             penguin.ResetPos();//Reset penguin position
-            camera.position.y = spGround.getY() + camera.viewportHeight / 2;//reset camera position
+            camera.position.y = ground.groundBody.getPosition().y + camera.viewportHeight / 2;//reset camera position
             scrollTimer = 0f;//reset scrollTimer
         }
         penguin.body.setAngularVelocity(-accelerometer.accelY() / 3);//set the angular velocity of penguin to the accelerometer value
 
-        groundBody.setTransform(camera.position.x / fPM, groundBody.getPosition().y, 0);//keep the ground on the bottom of the camera
+        ground.UpdatePos(camera);//Update ground position
         penguin.UpdatePos();//update the sprites position to the body
+
         world.step(1 / 60f, 6, 2);//Step the simulation of the box2d world to 60fps
-        spGround.setPosition((groundBody.getPosition().x * fPM) - spGround.
-                        getWidth() / 2,
-                (groundBody.getPosition().y * fPM) - spGround.getHeight() / 2)
-        ;
         Gdx.gl.glClearColor(1, 1, 1, 1);//clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -112,8 +110,8 @@ public class GameScreen extends Game {
 
         camera.position.x = penguin.sprite.getX() + penguin.sprite.getWidth() / 2;//set the camera position to follow the penguin's position
         camera.position.y = penguin.sprite.getY() + penguin.sprite.getHeight() / 2;
-        if (camera.position.y <= spGround.getY() + camera.viewportHeight / 2) {
-            camera.position.y = spGround.getY() + camera.viewportHeight / 2;
+        if (camera.position.y <= ground.groundBody.getPosition().y + camera.viewportHeight / 2) {
+            camera.position.y = ground.groundBody.getPosition().y + camera.viewportHeight / 2;
         }
 
         camera.update();//update once all changes are made
@@ -132,7 +130,7 @@ public class GameScreen extends Game {
 
         //Draw everything
         batch.begin();
-        batch.draw(spBg, camera.position.x - camera.viewportWidth / 2, groundBody.getPosition().y);
+        batch.draw(spBg, camera.position.x - camera.viewportWidth / 2, ground.groundBody.getPosition().y);
         penguin.draw(batch);
         batch.end();
         stage.draw();//draws everything inside the stage
