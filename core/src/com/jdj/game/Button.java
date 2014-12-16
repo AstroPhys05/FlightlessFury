@@ -28,7 +28,7 @@ public class Button {
     TextureAtlas buttonAtlas;//the texture atlas of the button
     int nWidth = Gdx.graphics.getWidth(), nHeight = Gdx.graphics.getHeight();
 
-    Button(String sText) {
+    Button(String sText,float xPos, float yPos) {
         skin = new Skin();
         texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
         texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
@@ -44,7 +44,7 @@ public class Button {
         textButtonStyle.font.setColor(Color.WHITE);//Button text color = white
         textButton = new TextButton(sText, textButtonStyle);//Set the text and pass the style
         textButton.setSize(nWidth / 7, nWidth / 7);//set the size to 1/7th the screen width to keep it scaling
-        textButton.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
+        textButton.setPosition(xPos, yPos);//Set it to top left corner
         textButton.addListener(new InputListener() {//listener for button
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
