@@ -27,7 +27,8 @@ public class Button {
     Skin skin;//uses texture atlas to create skin
     TextureAtlas buttonAtlas;//the texture atlas of the button
     int nWidth = Gdx.graphics.getWidth(), nHeight = Gdx.graphics.getHeight();
-    Button(String sText){
+
+    Button(String sText) {
         skin = new Skin();
         texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
         texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
@@ -50,6 +51,7 @@ public class Button {
                 buttonPressed = true;
                 return true;
             }
+
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 buttonPressed = false;

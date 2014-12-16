@@ -48,12 +48,13 @@ public class Penguin {
         sprite.setRotation((float) Math.toDegrees(body.getAngle()));
     }
 
-    public void ResetPos(){//Reset velocities to 0 and position to the initial
+    public void ResetPos() {//Reset velocities to 0 and position to the initial
         body.setLinearVelocity(0, 0);
         body.setAngularVelocity(0);
         body.setTransform((sprite.getWidth() + sprite.getWidth() / 2) / 100f,
-                (Gdx.graphics.getHeight() / 7/3 + sprite.getHeight() / 2) / 100f, 0);
+                (Gdx.graphics.getHeight() / 7 / 3 + sprite.getHeight() / 2) / 100f, 0);
     }
+
     public void setVelocity(float x, float y) {
         body.setLinearVelocity(x, y);
     }//takes x and y velocity and sets the box2d body to that velocity

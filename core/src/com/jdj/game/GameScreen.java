@@ -1,6 +1,4 @@
 package com.jdj.game;
-//TODO clean up code by making multiple files and grouping similar code
-//TODO COMMENT MORE
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -16,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.math.Matrix4;
 //SideScrolling
 //https://code.google.com/p/libgdx-users/wiki/ScrollingTexture
@@ -30,7 +27,7 @@ import com.badlogic.gdx.math.Matrix4;
 //OrthoCam
 //http://www.gamefromscratch.com/post/2013/11/06/LibGDX-Tutorial-7-Camera-basics.aspx
 //https://github.com/libgdx/libgdx/wiki/Orthographic-camera
-public class jdjgame extends Game {
+public class GameScreen extends Game {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;//The libgdx Stage to add the buttons
     Button bLaunch, bReset;//the libgdx buttons LAUNCH and RESET
@@ -48,6 +45,7 @@ public class jdjgame extends Game {
     float scrollTimer = 0.0f;
     Penguin penguin;
     Accelerometer accelerometer;
+
     //debugging
     @Override
     public void create() {

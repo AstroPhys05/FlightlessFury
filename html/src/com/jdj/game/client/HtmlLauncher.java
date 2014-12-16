@@ -3,7 +3,7 @@ package com.jdj.game.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.jdj.game.jdjgame;
+import com.jdj.game.GameScreen;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
     @Override
     public ApplicationListener getApplicationListener() {
-        return new jdjgame();
+        return new GameScreen();
     }
 }
