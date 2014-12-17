@@ -64,7 +64,6 @@ public class GameScreen extends Game {
     Matrix4 debugMatrix;
     float scrollTimer = 0.0f;
     Penguin penguin;
-    Accelerometer accelerometer;
     //debugging
     @Override
     public void create() {
@@ -125,11 +124,12 @@ public class GameScreen extends Game {
             camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
             scrollTimer = 0f;//reset scrollTimer
         }
-        penguin.body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value
 
         groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);//keep the ground on the bottom of the camera
         penguin.UpdatePos();//update the sprites position to the body
         world.step(1 / 60f, 6, 2);//Step the simulation of the box2d world to 60fps
+
+
         spGround.setPosition((groundBody.getPosition().x * fPM) - spGround.
                         getWidth() / 2,
                 (groundBody.getPosition().y * fPM) - spGround.getHeight() / 2)
