@@ -50,10 +50,10 @@ public class jdjgame extends ApplicationAdapter {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (index >3){
-                    index = 0;
-                }else{
+                if(index<2){
                     index++;
+                }else{
+                    index = 0;
                 }
 
             }
