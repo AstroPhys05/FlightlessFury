@@ -46,9 +46,7 @@ import com.badlogic.gdx.math.Matrix4;
 public class GameScreen extends Game {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
-    TextButton bLaunch, bReset;
-    Boolean bLaunchPressed = false;
-    TextButton.TextButtonStyle textButtonStyle;
+    Button bReset,bLaunch;
     Texture texture;
     BitmapFont font;
     Skin skin;
@@ -85,14 +83,13 @@ public class GameScreen extends Game {
         spGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();//Dimensions of the device
         nHeight = Gdx.graphics.getHeight();
-        world = new World(new Vector2(0f, -9.8f), true);
+        world = new World(new Vector2(0f, -9.8f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
         spGround.setSize(nWidth*2, nHeight / 7/3);
 
         penguin = new Penguin(world);
         iBg.setWrap(Texture.TextureWrap.Repeat,Texture.TextureWrap.Repeat);
 
         spBg = new Sprite(iBg);
-        //spBg.setSize(nWidth*7,nHeight*7);
 
         //Ground body & sprite
         spGround.setPosition(0, 0);//Position of sprite
@@ -104,46 +101,15 @@ public class GameScreen extends Game {
         groundBox.setAsBox(spGround.getWidth() / 2 / fPM, spGround.getHeight()
                 / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
         groundBody.createFixture(groundBox, 0.0f);//make it fixed
-//
-        //Button 1 : Launch
-        skin.addRegions(buttonAtlas);//add the texture atlas to the button skin
-        textButtonStyle = new TextButton.TextButtonStyle();//set the style using the font
-        textButtonStyle.font = font;
-        textButtonStyle.up = skin.getDrawable("Launch_Pressed");//the .pack file has defines individual image files for each setting
-        textButtonStyle.down = skin.getDrawable("Launch_Unpressed");
-        textButtonStyle.checked = skin.getDrawable("Launch_Pressed");
-        textButtonStyle.font.setColor(Color.WHITE);//Button text color = white
-        bLaunch = new TextButton("LAUNCH", textButtonStyle);//Set the text and pass the style
-        bLaunch.setSize(nWidth / 7, nWidth / 7);//set the size to 1/7th the screen width to keep it scaling
-        bLaunch.setPosition(0, nHeight - nWidth / 7);//Set it to top left corner
+
+        //Camera
         camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
         camera.position.y = spGround.getY()+camera.viewportHeight/2;//set the position to above the ground
-        bLaunch.addListener(new InputListener() {//Launch button listener
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                bLaunchPressed = true;
-                return true;
-            }
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                bLaunchPressed = false;
-            }
-        });
-        //Button 2 : Reset
-        bReset = new TextButton("RESET", textButtonStyle);
-        bReset.setSize(nWidth / 7, nWidth / 7);
-        bReset.setPosition(nWidth / 7, nHeight - nWidth / 7);
-        bReset.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                penguin.ResetPos();//Reset penguin position
-                camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
-                scrollTimer = 0f;//reset scrollTimer
-            }
 
-        });
-        stage.addActor(bLaunch);//add the buttons to the stage
-        stage.addActor(bReset);
+        bLaunch = new Button("LAUNCH",0,nHeight - nWidth / 7);
+        bReset = new Button("RESET",nWidth / 7, nHeight - nWidth / 7);
+        stage.addActor(bLaunch.button);//add the buttons to the stage
+        stage.addActor(bReset.button);
         debugRenderer = new Box2DDebugRenderer();//For Debugging : Shows Boxes around the sprites
 
     }
@@ -151,8 +117,13 @@ public class GameScreen extends Game {
 
     @Override
     public void render() {
-        if(bLaunchPressed){
-            penguin.setVelocity(20f,10f);//set the velocity when launch is pressed
+        if(bLaunch.pressed){//If the launch is pressed
+            penguin.setVelocity(20f,10f);//set the velocity (x,y)
+        }
+        if(bReset.pressed){//If the reset is pressed
+            penguin.ResetPos();//Reset penguin position
+            camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
+            scrollTimer = 0f;//reset scrollTimer
         }
         penguin.body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value
 
@@ -184,9 +155,7 @@ public class GameScreen extends Game {
         if(scrollTimer>1.0f) {
             scrollTimer = 0.0f;
         }
-
         spBg.setU(scrollTimer);
-
         spBg.setU2((scrollTimer + 1));
 
         //Draw everything

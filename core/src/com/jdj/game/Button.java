@@ -26,7 +26,7 @@ public class Button {
     BitmapFont font;
     Skin skin;//uses texture atlas to create skin
     TextureAtlas buttonAtlas;//the texture atlas of the button
-    int nWidth = Gdx.graphics.getWidth(), nHeight = Gdx.graphics.getHeight();
+    int nWidth = Gdx.graphics.getWidth();
 
     Button(String sText,float xPos, float yPos) {
         skin = new Skin();
