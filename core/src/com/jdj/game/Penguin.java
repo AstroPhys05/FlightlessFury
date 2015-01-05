@@ -20,6 +20,7 @@ public class Penguin {
     BodyDef bodyDef;
     PolygonShape shape;
 
+    Accelerometer accelerometer;
     public Penguin(World world) {
         this.texture = new Texture("penguin.png");
         this.sprite = new Sprite(texture);
@@ -41,11 +42,14 @@ public class Penguin {
     }
 
     public void UpdatePos() {//Constantly called in render to update the sprite based on how the body changes
+
+        body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value
         sprite.setPosition((body.getPosition().x * 100f) - sprite.
                         getWidth() / 2,
                 (body.getPosition().y * 100f) - sprite.getHeight() / 2)
         ;
         sprite.setRotation((float) Math.toDegrees(body.getAngle()));
+
     }
 
     public void ResetPos(){//Reset velocities to 0 and position to the initial
