@@ -28,7 +28,7 @@ public class Penguin {
 
         bodyDef.position.set((sprite.getX() + sprite.getWidth() / 2) / 100f,//Set the position to the sprite and convert to meters using 100 pixels = 1 meter
                 (sprite.getY() + sprite.getHeight() / 2) / 100f);
-        this.body = world.createBody(bodyDef);
+        body = world.createBody(bodyDef);
         shape = new PolygonShape();
         shape.setAsBox(sprite.getWidth() / 2 / 100f, sprite.getHeight()
                 / 2 / 100f);//Set the body's shape to a box

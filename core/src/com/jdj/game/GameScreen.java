@@ -1,8 +1,8 @@
 package com.jdj.game;
-//TODO clean up code by making multiple files and grouping similar code
-//TODO COMMENT MORE
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -54,10 +54,13 @@ public class GameScreen extends Game {
     SpriteBatch batch;
     Sprite spGround;
     Sprite spBg;
+    Sprite spPU;
     Texture iGround;
     Texture iBg;
+    Texture iPU;
     World world;
     Body groundBody;
+    Body PUBody;
     OrthographicCamera camera;
     int nWidth, nHeight;
     Box2DDebugRenderer debugRenderer;
@@ -65,12 +68,16 @@ public class GameScreen extends Game {
     float scrollTimer = 0.0f;
     Penguin penguin;
     Accelerometer accelerometer;
+    Sound sound1;
+    Sound sound2;
     //debugging
     @Override
     public void create() {
         batch = new SpriteBatch();
         stage = new Stage();
         skin = new Skin();
+        sound1 = Gdx.audio.newSound(Gdx.files.internal("sfx_wing.ogg"));
+        sound2 = Gdx.audio.newSound(Gdx.files.internal("sfx_point.ogg"));
         Gdx.input.setInputProcessor(stage);//Makes the buttons clickable
         texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
         texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
@@ -79,17 +86,20 @@ public class GameScreen extends Game {
 
         buttonAtlas = new TextureAtlas("buttons.pack");
         iGround = new Texture("ground.jpg");
-        iBg = new Texture("city.jpg");
+        iBg = new Texture("mario.jpg");
+        iPU = new Texture("powerup.png");
         spGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();//Dimensions of the device
         nHeight = Gdx.graphics.getHeight();
-        world = new World(new Vector2(0f, -9.8f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
+        world = new World(new Vector2(0f,-9.8f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
         spGround.setSize(nWidth*2, nHeight / 7/3);
 
         penguin = new Penguin(world);
         iBg.setWrap(Texture.TextureWrap.Repeat,Texture.TextureWrap.Repeat);
-
         spBg = new Sprite(iBg);
+
+        spPU = new Sprite(iPU);
+
 
         //Ground body & sprite
         spGround.setPosition(0, 0);//Position of sprite
@@ -102,6 +112,13 @@ public class GameScreen extends Game {
                 / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
         groundBody.createFixture(groundBox, 0.0f);//make it fixed
 
+        // Power-UP
+        BodyDef PUBodyDef = new BodyDef();
+        PUBody = world.createBody(PUBodyDef);//Pass the body def to the body
+        PolygonShape PUBox = new PolygonShape();//make a box shaped hitbox
+        PUBox.setAsBox(spPU.getWidth() / 2 / fPM, spPU.getHeight()
+                / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
+        PUBody.createFixture(PUBox, 0.0f);//make it fixed
         //Camera
         camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
         camera.position.y = spGround.getY()+camera.viewportHeight/2;//set the position to above the ground
@@ -119,11 +136,19 @@ public class GameScreen extends Game {
     public void render() {
         if(bLaunch.pressed){//If the launch is pressed
             penguin.setVelocity(20f,10f);//set the velocity (x,y)
+            sound1.play(); //play sound effect for wing
+
+
+
+
+
         }
         if(bReset.pressed){//If the reset is pressed
             penguin.ResetPos();//Reset penguin position
             camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
             scrollTimer = 0f;//reset scrollTimer
+            sound2.play(); //play sound effect for point
+
         }
         penguin.body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value
 
@@ -160,7 +185,8 @@ public class GameScreen extends Game {
 
         //Draw everything
         batch.begin();
-        batch.draw(spBg, camera.position.x - camera.viewportWidth / 2, groundBody.getPosition().y);
+        batch.draw(spBg, camera.position.x - camera.viewportWidth / 2, groundBody.getPosition().y,nWidth,nHeight);
+        batch.draw(spPU,100,100,spPU.getWidth()*nWidth/700,spPU.getHeight()*nWidth/700); // drawing the power up image
         penguin.draw(batch);
         batch.end();
         stage.draw();//draws everything inside the stage
