@@ -4,7 +4,6 @@ package com.jdj.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,13 +18,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.math.Matrix4;
 //SideScrolling
 //https://code.google.com/p/libgdx-users/wiki/ScrollingTexture
@@ -92,7 +86,7 @@ public class GameScreen extends Game {
         spGround = new Sprite(iGround);
         nWidth = Gdx.graphics.getWidth();//Dimensions of the device
         nHeight = Gdx.graphics.getHeight();
-        world = new World(new Vector2(0f,-9.8f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
+        world = new World(new Vector2(0f,-20f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
         spGround.setSize(nWidth*2, nHeight / 7/3);
 
         penguin = new Penguin(world);
@@ -117,6 +111,8 @@ public class GameScreen extends Game {
         BodyDef PUBodyDef = new BodyDef();
         PUBody = world.createBody(PUBodyDef);//Pass the body def to the body
         PolygonShape PUBox = new PolygonShape();//make a box shaped hitbox
+        PUBodyDef.position.set((spGround.getX() + spGround.getWidth() / 2) / fPM,
+                (spGround.getY() + spGround.getHeight() / 2) / fPM);//Set the initial position
         PUBox.setAsBox(spPU.getWidth() / 2 / fPM, spPU.getHeight()
                 / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
         PUBody.createFixture(PUBox, 0.0f);//make it fixed
@@ -124,8 +120,8 @@ public class GameScreen extends Game {
         camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
         camera.position.y = spGround.getY()+camera.viewportHeight/2;//set the position to above the ground
 
-        bLaunch = new Button("LAUNCH",0,nHeight - nWidth / 7);
-        bReset = new Button("RESET",nWidth / 7, nHeight - nWidth / 7);
+        bLaunch = new Button("LAUNCH",0,nHeight - nWidth / 7,sound1);
+        bReset = new Button("RESET",nWidth / 7, nHeight - nWidth / 7,sound2);
         stage.addActor(bLaunch.button);//add the buttons to the stage
         stage.addActor(bReset.button);
         debugRenderer = new Box2DDebugRenderer();//For Debugging : Shows Boxes around the sprites
@@ -137,7 +133,7 @@ public class GameScreen extends Game {
     public void render() {
         if(bLaunch.pressed){//If the launch is pressed
             penguin.setVelocity(20f,10f);//set the velocity (x,y)
-            sound1.play(); //play sound effect for wing
+
 
 
 
@@ -148,7 +144,6 @@ public class GameScreen extends Game {
             penguin.ResetPos();//Reset penguin position
             camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
             scrollTimer = 0f;//reset scrollTimer
-            sound2.play(); //play sound effect for point
 
         }
         penguin.body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value

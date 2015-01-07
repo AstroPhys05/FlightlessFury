@@ -24,6 +24,7 @@ public class Button {
 
     TextButton button;// the libgdx buttons LAUNCH and RESET
     Boolean pressed = false;//set the default pressed to false
+    Boolean playsound = true;//set the default pressed to true
     TextButton.TextButtonStyle style;//make a textbutton style : fonts, etc.
     Texture texture;
     BitmapFont font;
@@ -31,7 +32,7 @@ public class Button {
     TextureAtlas buttonAtlas;//the texture atlas of the button
     int nWidth = Gdx.graphics.getWidth();
 
-    Button(String sText,float xPos, float yPos) {
+    Button(String sText,float xPos, float yPos, final Sound sound) {
         skin = new Skin();
         texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
         texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
@@ -52,13 +53,20 @@ public class Button {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 pressed = true;
+                if(playsound){
+                    sound.play();
+                    playsound = false;
+                }
+
                 return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 pressed = false;
+                playsound = true;
             }
+
         });
     }
 }
