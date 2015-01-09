@@ -24,6 +24,7 @@ public class Penguin {
     Boolean hasFuel = true, launched = false, isDead = false;
     double dFuel = 100;
     int nFuel = 100, nDistance = 0,nFish = 0;
+
     float x, y;
 
     public Penguin(World world) {

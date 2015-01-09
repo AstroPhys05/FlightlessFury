@@ -63,7 +63,8 @@ public class GameScreen extends Game {
     Sound sound1;
     Sound sound2;
     Ground ground;
-
+    Sprite spFuelbar, spFish;
+    Texture tFuelbar,tFish;
     //debugging
     @Override
     public void create() {
@@ -87,7 +88,10 @@ public class GameScreen extends Game {
 
         penguin = new Penguin(world);
         entity = new Entity(world, "fish.png", "fish");
-
+        tFuelbar = new Texture("fuelbar.png");
+        tFish = new Texture("fish.png");
+        spFish = new Sprite(tFish);
+        spFuelbar = new Sprite(tFuelbar);
         iBg.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         spBg = new Sprite(iBg);
@@ -124,14 +128,14 @@ public class GameScreen extends Game {
                     if ((fa.getUserData() != null && fa.getUserData().equals("penguin")) && (fb.getUserData() != null && fb.getUserData().equals("powerup"))) {//if the penguin hits the power up it goes through
                         contact.setEnabled(false);
                         entity.renew = true;
-                        penguin.dFuel+=20;
+                        penguin.dFuel+=10;
                         if(penguin.dFuel>100){
                             penguin.dFuel=100;}
                     }
                     if ((fa.getUserData() != null && fa.getUserData().equals("penguin")) && (fb.getUserData() != null && fb.getUserData().equals("fish"))) {//if the penguin hits the fish it goes through
                         contact.setEnabled(false);
                         entity.renew = true;
-                        penguin.dFuel+=20;
+                        penguin.dFuel+=10;
                         if(penguin.dFuel>100){
                             penguin.dFuel=100;}
                         penguin.nFish+=1;//its doubled for some reason
@@ -214,9 +218,10 @@ public class GameScreen extends Game {
         }
         font.draw(batch, "Speed:" + ((double) Math.round(penguin.dVel *3.6* 10) / 10) + "km/h", camera.position.x, nHeight - nHeight / 15);//round speed to 1 decimal place
         font.draw(batch, "Fuel:" + penguin.nFuel + "%", camera.position.x, nHeight - 2 * nHeight / 15);
-        font.draw(batch, "Distance:" + penguin.nDistance + " m", camera.position.x + camera.viewportWidth / 4, nHeight - nHeight / 15);
-        font.draw(batch, "Fish Eaten:" + penguin.nFish, camera.position.x + camera.viewportWidth / 4,  nHeight - 2 * nHeight / 15);
-
+        font.draw(batch, "Distance:" + penguin.nDistance + "m", camera.position.x + camera.viewportWidth / 4, nHeight - nHeight / 15);
+        font.draw(batch, "X" + penguin.nFish, camera.position.x- camera.viewportWidth/2 + camera.viewportWidth / 7+spFish.getWidth()/4*3,  nHeight - 2 * nHeight / 15);
+        batch.draw(spFuelbar,camera.position.x- camera.viewportWidth/2 + camera.viewportWidth / 7,  nHeight - spFuelbar.getHeight(),penguin.nFuel*5,spFuelbar.getHeight());
+        batch.draw(spFish,camera.position.x- camera.viewportWidth/2 + camera.viewportWidth / 7,  nHeight - spFuelbar.getHeight()- spFish.getHeight());
         batch.end();
         stage.draw();//draws everything inside the stage
 
