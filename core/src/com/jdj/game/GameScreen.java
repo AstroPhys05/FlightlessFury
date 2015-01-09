@@ -1,9 +1,9 @@
 package com.jdj.game;
-//TODO clean up code by making multiple files and grouping similar code
-//TODO COMMENT MORE
+//TODO add sounds
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,14 +13,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.WorldManifold;
 //SideScrolling
 //https://code.google.com/p/libgdx-users/wiki/ScrollingTexture
 
@@ -41,30 +44,26 @@ import com.badlogic.gdx.math.Matrix4;
 public class GameScreen extends Game {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
-    Button bReset,bLaunch;
+    Button bReset, bLaunch;
     Texture texture;
     BitmapFont font;
     Skin skin;
     TextureAtlas buttonAtlas;
     SpriteBatch batch;
-    Sprite spGround;
-    Sprite spBg;
-    Sprite spPU;
-    Texture iGround;
-    Texture iBg;
-    Texture iPU;
+    Sprite spBg,spGameOver;
+    Texture iBg,iGameOver;
     World world;
-    Body groundBody;
-    Body PUBody;
     OrthographicCamera camera;
     int nWidth, nHeight;
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
     float scrollTimer = 0.0f;
     Penguin penguin;
-    Accelerometer accelerometer;
+    Entity entity;
     Sound sound1;
     Sound sound2;
+    Ground ground;
+
     //debugging
     @Override
     public void create() {
@@ -78,102 +77,127 @@ public class GameScreen extends Game {
         texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
         font = new BitmapFont(Gdx.files.internal("LiberationMono.fnt"), new TextureRegion(texture), false);
         font.setScale(1f, 1f);//scale to other devices - need to test it
-
+        font.setColor(Color.RED);
         buttonAtlas = new TextureAtlas("buttons.pack");
-        iGround = new Texture("ground.jpg");
         iBg = new Texture("mario.jpg");
-        iPU = new Texture("powerup.png");
-        spGround = new Sprite(iGround);
+        iGameOver = new Texture("Game_Over.png");
         nWidth = Gdx.graphics.getWidth();//Dimensions of the device
         nHeight = Gdx.graphics.getHeight();
-        world = new World(new Vector2(0f,-20f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
-        spGround.setSize(nWidth*2, nHeight / 7/3);
+        world = new World(new Vector2(0f, -9.8f), true);//Create the box2d physics world with 0 gravity in the x-direction and -9.8m/s/s in the y direction
 
         penguin = new Penguin(world);
-        iBg.setWrap(Texture.TextureWrap.Repeat,Texture.TextureWrap.Repeat);
+        entity = new Entity(world, "fish.png", "fish");
+
+        iBg.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+
         spBg = new Sprite(iBg);
+        spGameOver = new Sprite(iGameOver);
 
-        spPU = new Sprite(iPU);
+        ground = new Ground(world);
 
-
-        //Ground body & sprite
-        spGround.setPosition(0, 0);//Position of sprite
-        BodyDef groundBodyDef = new BodyDef();//Box2d bodydef is used by the body
-        groundBodyDef.position.set((spGround.getX() + spGround.getWidth() / 2) / fPM,
-                (spGround.getY() + spGround.getHeight() / 2) / fPM);//Set the initial position
-        groundBody = world.createBody(groundBodyDef);//Pass the body def to the body
-        PolygonShape groundBox = new PolygonShape();//make a box shaped hitbox
-        groundBox.setAsBox(spGround.getWidth() / 2 / fPM, spGround.getHeight()
-                / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
-        groundBody.createFixture(groundBox, 0.0f);//make it fixed
-
-        // Power-UP
-        BodyDef PUBodyDef = new BodyDef();
-        PUBody = world.createBody(PUBodyDef);//Pass the body def to the body
-        PolygonShape PUBox = new PolygonShape();//make a box shaped hitbox
-        PUBodyDef.position.set((spGround.getX() + spGround.getWidth() / 2) / fPM,
-                (spGround.getY() + spGround.getHeight() / 2) / fPM);//Set the initial position
-        PUBox.setAsBox(spPU.getWidth() / 2 / fPM, spPU.getHeight()
-                / 2 / fPM);//set the size using the conversion ratio since box2d uses meters
-        PUBody.createFixture(PUBox, 0.0f);//make it fixed
         //Camera
         camera = new OrthographicCamera(nWidth, nHeight);//libgdx orthographic camera
-        camera.position.y = spGround.getY()+camera.viewportHeight/2;//set the position to above the ground
+        camera.position.y = ground.body.getPosition().y + camera.viewportHeight / 2;//set the position to above the ground
 
-        bLaunch = new Button("LAUNCH",0,nHeight - nWidth / 7,sound1);
-        bReset = new Button("RESET",nWidth / 7, nHeight - nWidth / 7,sound2);
+        bLaunch = new Button("LAUNCH", nWidth / 2 - nWidth / 7 / 2, nHeight / 2 - nWidth / 7 / 2, sound1);
+        bReset = new Button("RESET", 0, nHeight - nWidth / 7, sound2);
         stage.addActor(bLaunch.button);//add the buttons to the stage
         stage.addActor(bReset.button);
         debugRenderer = new Box2DDebugRenderer();//For Debugging : Shows Boxes around the sprites
+        //Contact Listener
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void endContact(Contact contact) {//called when to fixtures no longer collide
+            }
 
+            @Override
+            public void beginContact(Contact contact) {//called when to fixtures collide
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+                WorldManifold manifold = contact.getWorldManifold();
+                Fixture fa = contact.getFixtureA();
+                Fixture fb = contact.getFixtureB();
+                for (int j = 0; j < manifold.getNumberOfContactPoints(); j++) {
+                    if ((fa.getUserData() != null && fa.getUserData().equals("penguin")) && (fb.getUserData() != null && fb.getUserData().equals("powerup"))) {//if the penguin hits the power up it goes through
+                        contact.setEnabled(false);
+                        entity.renew = true;
+                        penguin.dFuel+=20;
+                        if(penguin.dFuel>100){
+                            penguin.dFuel=100;}
+                    }
+                    if ((fa.getUserData() != null && fa.getUserData().equals("penguin")) && (fb.getUserData() != null && fb.getUserData().equals("fish"))) {//if the penguin hits the fish it goes through
+                        contact.setEnabled(false);
+                        entity.renew = true;
+                        penguin.dFuel+=20;
+                        if(penguin.dFuel>100){
+                            penguin.dFuel=100;}
+                        penguin.nFish+=1;//its doubled for some reason
+                    }
+                    if ((fa.getUserData() != null && fa.getUserData().equals("penguin")) && (fb.getUserData() != null && fb.getUserData().equals("enemybird"))) {//if the penguin hits the fish it goes through
+                        entity.renew = true;
+                        penguin.dFuel =0;
+                        penguin.nFuel = 0;
+                        penguin.body.setAngularVelocity(500);
+                    }
+                    if ((fa.getUserData() != null && fa.getUserData().equals("penguin")) && (fb.getUserData() != null && fb.getUserData().equals("jetpack"))) {//if the penguin hits the fish it goes through
+                        penguin.SuperSpeed();
+                        contact.setEnabled(false);
+                        entity.renew = true;
+                    }
+                }
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
     }
 
 
     @Override
     public void render() {
-        if(bLaunch.pressed){//If the launch is pressed
-            penguin.setVelocity(20f,10f);//set the velocity (x,y)
-
-
-
-
-
-
+        if (bLaunch.pressed) {//If the launch is pressed
+            penguin.launched = true;
+            bLaunch.button.remove();
         }
-        if(bReset.pressed){//If the reset is pressed
+        if(penguin.sprite.getY()>camera.viewportHeight+penguin.sprite.getHeight()*3){
+            penguin.hasFuel = false;
+        }
+        if (bReset.pressed) {//If the reset is pressed
             penguin.ResetPos();//Reset penguin position
-            camera.position.y = spGround.getY()+camera.viewportHeight/2;//reset camera position
+            camera.position.y = ground.body.getPosition().y + camera.viewportHeight / 2;//reset camera position
             scrollTimer = 0f;//reset scrollTimer
-
+            stage.addActor(bLaunch.button);
+            entity.Renew(penguin);
         }
-        penguin.body.setAngularVelocity(-accelerometer.accelY()/3);//set the angular velocity of penguin to the accelerometer value
-
-        groundBody.setTransform(camera.position.x/fPM,groundBody.getPosition().y,0);//keep the ground on the bottom of the camera
-        penguin.UpdatePos();//update the sprites position to the body
+        if(entity.renew){
+            entity.Renew(penguin);
+        }
+        if(entity.sprite.getX()<camera.position.x-camera.viewportWidth){
+            entity.Renew(penguin);
+        }
+        ground.UpdatePos(camera);
+        penguin.Update();//update the sprites position to the body & other values
         world.step(1 / 60f, 6, 2);//Step the simulation of the box2d world to 60fps
-        spGround.setPosition((groundBody.getPosition().x * fPM) - spGround.
-                        getWidth() / 2,
-                (groundBody.getPosition().y * fPM) - spGround.getHeight() / 2)
-        ;
         Gdx.gl.glClearColor(1, 1, 1, 1);//clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         debugMatrix = batch.getProjectionMatrix().cpy().scale(fPM,
                 fPM, 0);//For Debugging : Shows Boxes around the sprites
 
-        camera.position.x = penguin.sprite.getX()+ penguin.sprite.getWidth()/2;//set the camera position to follow the penguin's position
-        camera.position.y= penguin.sprite.getY()+penguin.sprite.getHeight()/2;
-        if(camera.position.y<=spGround.getY()+camera.viewportHeight/2){
-            camera.position.y = spGround.getY()+camera.viewportHeight/2;
-        }
+        camera.position.x = penguin.sprite.getX() + penguin.sprite.getWidth()*2;//set the camera position to follow the penguin's position
 
         camera.update();//update once all changes are made
         batch.setProjectionMatrix(camera.combined);//This sets the batch to what the camera sees
 
 
         //Scroll the background using the body's velocity
-        scrollTimer += penguin.body.getLinearVelocity().x/(1000);//May need to change the divisor to get a realistic sized velocity
-        if(scrollTimer>1.0f) {
+        scrollTimer += penguin.body.getLinearVelocity().x / (1070);//May need to change the divisor to get a realistic sized velocity
+        if (scrollTimer > 1.0f) {
             scrollTimer = 0.0f;
         }
         spBg.setU(scrollTimer);
@@ -181,13 +205,22 @@ public class GameScreen extends Game {
 
         //Draw everything
         batch.begin();
-        batch.draw(spBg, camera.position.x - camera.viewportWidth / 2, groundBody.getPosition().y,nWidth,nHeight);
-        batch.draw(spPU,100,100,spPU.getWidth()*nWidth/700,spPU.getHeight()*nWidth/700); // drawing the power up image
+        batch.draw(spBg, camera.position.x - camera.viewportWidth / 2, ground.body.getPosition().y, nWidth, nHeight);
         penguin.draw(batch);
+        entity.draw(batch);
+        if(penguin.isDead){
+            batch.draw(spGameOver, camera.position.x - camera.viewportWidth / 2, ground.body.getPosition().y, nWidth, nHeight);
+
+        }
+        font.draw(batch, "Speed:" + ((double) Math.round(penguin.dVel *3.6* 10) / 10) + "km/h", camera.position.x, nHeight - nHeight / 15);//round speed to 1 decimal place
+        font.draw(batch, "Fuel:" + penguin.nFuel + "%", camera.position.x, nHeight - 2 * nHeight / 15);
+        font.draw(batch, "Distance:" + penguin.nDistance + " m", camera.position.x + camera.viewportWidth / 4, nHeight - nHeight / 15);
+        font.draw(batch, "Fish Eaten:" + penguin.nFish, camera.position.x + camera.viewportWidth / 4,  nHeight - 2 * nHeight / 15);
+
         batch.end();
         stage.draw();//draws everything inside the stage
 
-        debugRenderer.render(world, debugMatrix);//For Debugging : Shows Boxes around the sprites
+       //debugRenderer.render(world, debugMatrix);//For Debugging : Shows Boxes around the sprites
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Button {
     TextureAtlas buttonAtlas;//the texture atlas of the button
     int nWidth = Gdx.graphics.getWidth();
 
-    Button(String sText,float xPos, float yPos, final Sound sound) {
+    Button(String sText, float xPos, float yPos, final Sound sound) {
         skin = new Skin();
         texture = new Texture(Gdx.files.internal("LiberationMono.png"), true); // true enables mipmaps
         texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear); // linear filtering in nearest mipmap image
@@ -53,7 +53,7 @@ public class Button {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 pressed = true;
-                if(playsound){
+                if (playsound) {
                     sound.play();
                     playsound = false;
                 }
