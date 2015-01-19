@@ -39,7 +39,7 @@ public class Penguin {
         shape = new PolygonShape();
         shape.setAsBox(sprite.getWidth() / 2 / 100f, sprite.getHeight()
                 / 2 / 100f);//Set the body's shape to a box
-        FixtureDef fixtureDef = new FixtureDef();//Fixture def defines how the body acts on other box2d bodys
+        FixtureDef fixtureDef = new FixtureDef();//Fixture def defines how the body acts on other box2d bodies
         fixtureDef.shape = shape;//set to the box shape created
         fixtureDef.density = 10.0f;//Give it a density
         fixtureDef.friction = 0.3f;//Give it a small force of friction
