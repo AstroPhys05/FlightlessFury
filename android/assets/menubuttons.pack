@@ -1,0 +1,31 @@
+
+menubuttons.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+playgame
+  rotate: false
+  xy: 1, 131
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+highscores
+  rotate: false
+  xy: 1, 1
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+
+menubuttons2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+settings
+  rotate: false
+  xy: 1, 1
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1

@@ -2,6 +2,7 @@ package com.jdj.game;
 //TODO add sounds
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -41,10 +42,10 @@ import com.badlogic.gdx.physics.box2d.WorldManifold;
 //OrthoCam
 //http://www.gamefromscratch.com/post/2013/11/06/LibGDX-Tutorial-7-Camera-basics.aspx
 //https://github.com/libgdx/libgdx/wiki/Orthographic-camera
-public class GameScreen extends Game {
+public class GameScreen extends ScreenAdapter {
     final float fPM = 100f;//convert pixels to meters since box2d uses meters
     Stage stage;
-    Button bReset, bLaunch;
+    Button bReset, bLaunch,bMenu;
     Texture texture;
     BitmapFont font;
     Skin skin;
@@ -65,9 +66,10 @@ public class GameScreen extends Game {
     Ground ground;
     Sprite spFuelbar, spFish;
     Texture tFuelbar,tFish;
+    FlightlessFury game;
     //debugging
-    @Override
-    public void create() {
+    public GameScreen(FlightlessFury game) {
+        this.game = game;
         batch = new SpriteBatch();
         stage = new Stage();
         skin = new Skin();
@@ -105,8 +107,10 @@ public class GameScreen extends Game {
 
         bLaunch = new Button("LAUNCH", nWidth / 2 - nWidth / 7 / 2, nHeight / 2 - nWidth / 7 / 2, sound1);
         bReset = new Button("RESET", 0, nHeight - nWidth / 7, sound2);
+        bMenu = new Button("MENU",0,nHeight - nWidth / 7*2,sound2);
         stage.addActor(bLaunch.button);//add the buttons to the stage
         stage.addActor(bReset.button);
+        stage.addActor(bMenu.button);
         debugRenderer = new Box2DDebugRenderer();//For Debugging : Shows Boxes around the sprites
         //Contact Listener
         world.setContactListener(new ContactListener() {
@@ -163,7 +167,10 @@ public class GameScreen extends Game {
 
 
     @Override
-    public void render() {
+    public void render(float delta) {
+        if(bMenu.pressed){
+            game.setScreen(new MainMenuScreen(game));
+        }
         if (bLaunch.pressed) {//If the launch is pressed
             penguin.launched = true;
             bLaunch.button.remove();
@@ -200,7 +207,7 @@ public class GameScreen extends Game {
 
 
         //Scroll the background using the body's velocity
-        scrollTimer += penguin.body.getLinearVelocity().x / (1070);//May need to change the divisor to get a realistic sized velocity
+        scrollTimer += penguin.body.getLinearVelocity().x / (nHeight);//nHeight is the scaling for the screen pixel size
         if (scrollTimer > 1.0f) {
             scrollTimer = 0.0f;
         }
