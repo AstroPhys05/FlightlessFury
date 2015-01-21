@@ -1,11 +1,11 @@
-Physics: 
+1) Physics: 
 http://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
 https://github.com/libgdx/libgdx/wiki/Box2d
 https://www.youtube.com/watch?v=IDZMRDb1A_M#t=812 Unit Conversion
 
-Collision: 
+2) Collision: 
                http://programmersweb.blogspot.ca/2012/07/simple-libgdx-box2d-bouncing-ball.html
-Sidescrolling 
+3) Sidescrolling 
 http://truongtx.me/2013/04/28/scrolling-background-for-2d-game/
 http://www.youtube.com/watch?v=qyRHKkkSa9s
 http://novumbit.com/test-how-to/basic-side-scrolling-implementation-in-libgdx/
