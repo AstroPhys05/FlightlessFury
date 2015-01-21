@@ -1,11 +1,11 @@
-1) Physics: 
+Physics: 
 http://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
 https://github.com/libgdx/libgdx/wiki/Box2d
 https://www.youtube.com/watch?v=IDZMRDb1A_M#t=812 Unit Conversion
 
-2) Collision: 
+Collision: 
                http://programmersweb.blogspot.ca/2012/07/simple-libgdx-box2d-bouncing-ball.html
-3) Sidescrolling 
+Sidescrolling 
 http://truongtx.me/2013/04/28/scrolling-background-for-2d-game/
 http://www.youtube.com/watch?v=qyRHKkkSa9s
 http://novumbit.com/test-how-to/basic-side-scrolling-implementation-in-libgdx/
@@ -19,7 +19,20 @@ http://gamedev.stackexchange.com/questions/60123/registering-inputlistener-in-li
        5) Tiled Maps
 https://www.youtube.com/watch?v=qik60F5I6J4 
 
+       6) Smooth Flying http://stackoverflow.com/questions/22442495/smooth-fly-movement-like-flappy-bird-or-jet-pack-joy-ride-with-gravity-and-accel
 
-       6) Flying like Jetack JoyRide and flappy bird
+       7) OrthoCam
 
-http://stackoverflow.com/questions/22442495/smooth-fly-movement-like-flappy-bird-or-jet-pack-joy-ride-with-gravity-and-accel
+      http://www.gamefromscratch.com/post/2013/11/06/LibGDX-Tutorial-7-Camera-basics.aspx
+https://github.com/libgdx/libgdx/wiki/Orthographic-camera 
+  
+       8) Box2d Physics
+
+http://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
+https://github.com/libgdx/libgdx/wiki/Box2d
+https://www.youtube.com/watch?v=IDZMRDb1A_M#t=812
+http://programmersweb.blogspot.ca/2012/07/simple-libgdx-box2d-bouncing-ball.html
+
+
+
+	
