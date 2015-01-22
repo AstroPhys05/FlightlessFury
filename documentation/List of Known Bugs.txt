@@ -1,7 +1,8 @@
-Penguin floats in midair if you tilt too much at the start
+1)Penguin floats in midair if you tilt too much at the start
 
-Entities spawn in the ground sometimes
+2)Entities spawn in the ground sometimes
 
-Sometimes the fish counter goes up by 2 instead of 1 and sometimes the fuel goes up by double the usual amount. This has to do with how the contact listener detects collision
+3)Sometimes the fish counter goes up by 2 instead of 1 and sometimes the fuel goes up by double the usual amount. 
+  This has to do with how the contact listener detects collision
 
-Rocket power up goes too fast that you will probably die for going above or hitting the ground
+4)Rocket power up goes too fast that you will probably die for going above or hitting the ground
